@@ -188,13 +188,8 @@ def patient_portal(request):
                 scheduled_at=request.POST["scheduled_at"],
             )
         except ValueError as exc:
-            return render(
-                request,
-                "patient.html",
-                {
-                    "appointments": appointments,
-                    "error": str(exc),
-                },
+            return JsonResponse(
+                {"error": str(exc)},
                 status=409,
             )
         
