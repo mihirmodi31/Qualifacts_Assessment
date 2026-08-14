@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Patient Portal</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background: #f5f7fa;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        select,
+        input,
+        button {
+            padding: 8px;
+            margin: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .form-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+
+        button {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Patient Portal</h1>
+
+    <label>
+        Role:
+        <select onchange="changeRole(this.value)">
+            <option value="patient" selected>Patient</option>
+            <option value="provider">Provider</option>
+        </select>
+    </label>
+
+    <h2>My Appointments</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Date & Time</th>
+                <th>Provider</th>
+                <th>Appointment Type</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        {% for appointment in appointments %}
+
+            <tr>
+                <td>
+                    {{ appointment.scheduled_at|date:"d M Y, h:i A" }}
+                </td>
+
+                <td>
+                    {{ appointment.provider.name }}
+                </td>
+
+                <td>
+                    {{ appointment.appointment_type }}
+                </td>
+
+                <td>
+                    {{ appointment.status }}
+                </td>
+
+                <td>
+
+                    {% if appointment.status == "CONFIRMED" %}
+
+                        <form method="post"
+                              action="{% url 'patient-cancel' appointment.id %}">
+
+                            {% csrf_token %}
+
+                            <input
+                                type="hidden"
+                                name="version"
+                                value="{{ appointment.version }}"
+                            >
+
+                            <input
+                                type="hidden"
+                                name="changed_by"
+                                value="PATIENT"
+                            >
+
+                            <button type="submit">
+                                Cancel
+                            </button>
+
+                        </form>
+
+                    {% elif appointment.status == "PENDING" %}
+
+                        <span>Waiting for provider</span>
+
+                    {% else %}
+
+                        <span>—</span>
+
+                    {% endif %}
+
+                </td>
+            </tr>
+
+        {% empty %}
+
+            <tr>
+                <td colspan="5">
+                    No appointments found.
+                </td>
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+    </table>
+
+
+    <div class="form-section">
+
+        <h2>Request Appointment</h2>
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            <input
+                type="hidden"
+                name="action"
+                value="create"
+            >
+
+            <label>
+                Appointment Type:
+            </label>
+
+            <input
+                type="text"
+                name="appointment_type"
+                placeholder="Consultation"
+                required
+            >
+
+            <br>
+
+            <label>
+                Preferred Date & Time:
+            </label>
+
+            <input
+                type="datetime-local"
+                name="scheduled_at"
+                required
+            >
+
+            <br>
+
+            <button type="submit">
+                Request Appointment
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+function changeRole(role) {
+
+    if (role === "provider") {
+        window.location.href = "/appointments/provider/";
+    }
+
+}
+
+</script>
+
+</body>
+</html>

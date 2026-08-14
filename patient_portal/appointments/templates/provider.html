@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Provider Portal</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background: #f5f7fa;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+        }
+
+        select,
+        input,
+        button {
+            padding: 8px;
+            margin: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        form {
+            display: inline;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Provider Portal</h1>
+
+    <label>
+        Role:
+
+        <select onchange="changeRole(this.value)">
+
+            <option value="patient">
+                Patient
+            </option>
+
+            <option value="provider" selected>
+                Provider
+            </option>
+
+        </select>
+    </label>
+
+
+    <h2>Appointments</h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Patient</th>
+                <th>Date & Time</th>
+                <th>Appointment Type</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% for appointment in appointments %}
+
+            <tr>
+
+                <td>
+                    {{ appointment.patient.name }}
+                </td>
+
+                <td>
+                    {{ appointment.scheduled_at|date:"d M Y, h:i A" }}
+                </td>
+
+                <td>
+                    {{ appointment.appointment_type }}
+                </td>
+
+                <td>
+                    {{ appointment.status }}
+                </td>
+
+                <td>
+
+                    {% if appointment.status == "PENDING" %}
+
+                        <form
+                            method="post"
+                            action="{% url 'provider-confirm' appointment.id %}"
+                        >
+
+                            {% csrf_token %}
+
+                            <input
+                                type="hidden"
+                                name="version"
+                                value="{{ appointment.version }}"
+                            >
+
+                            <button type="submit">
+                                Confirm
+                            </button>
+
+                        </form>
+
+
+                        <form
+                            method="post"
+                            action="{% url 'provider-reschedule' appointment.id %}"
+                        >
+
+                            {% csrf_token %}
+
+                            <input
+                                type="hidden"
+                                name="version"
+                                value="{{ appointment.version }}"
+                            >
+
+                            <input
+                                type="datetime-local"
+                                name="scheduled_at"
+                                required
+                            >
+
+                            <button type="submit">
+                                Reschedule
+                            </button>
+
+                        </form>
+
+                    {% elif appointment.status == "CONFIRMED" %}
+
+                        <form
+                            method="post"
+                            action="{% url 'provider-reschedule' appointment.id %}"
+                        >
+
+                            {% csrf_token %}
+
+                            <input
+                                type="hidden"
+                                name="version"
+                                value="{{ appointment.version }}"
+                            >
+
+                            <input
+                                type="datetime-local"
+                                name="scheduled_at"
+                                required
+                            >
+
+                            <button type="submit">
+                                Reschedule
+                            </button>
+
+                        </form>
+
+                    {% else %}
+
+                        <span>—</span>
+
+                    {% endif %}
+
+                </td>
+
+            </tr>
+
+        {% empty %}
+
+            <tr>
+
+                <td colspan="5">
+                    No appointments found.
+                </td>
+
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+<script>
+
+function changeRole(role) {
+
+    if (role === "patient") {
+
+        window.location.href = "/appointments/patient/";
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
