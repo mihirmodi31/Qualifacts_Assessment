@@ -33,7 +33,54 @@ The outputs of these concurrency tests are included as comments at the end of **
 - HTML/CSS
 - Django ORM
 
-## Application Flow
+## Project Structure
+
+## Project Structure
+
+```text
+patient_portal/
+│
+├── appointments/
+│   ├── models.py
+│   ├── services.py
+│   ├── views.py
+│   ├── urls.py
+│   ├── notifications.py
+│   ├── admin.py
+│   │
+│   ├── templates/
+│   │   ├── patient.html
+│   │   └── provider.html
+│   │
+│   └── tests/
+│       └── ...
+│
+├── config/
+│   ├── settings.py
+│   ├── urls.py
+│   └── ...
+│
+├── test_concurrency_1.py
+├── test_concurrency_2.py
+│
+├── manage.py
+├── requirements.txt
+├── README.md
+└── db.sqlite3
+```
+
+### Key Files
+
+- **`models.py`** — Data models for patients, providers, appointments, and appointment history.
+- **`services.py`** — Core appointment business logic, transactions, version checking, overlap detection, and concurrency handling.
+- **`views.py`** — REST API endpoints and patient/provider portal views.
+- **`notifications.py`** — Notification stub triggered after successful appointment confirmation.
+- **`urls.py`** — API and frontend URL routing.
+- **`patient.html`** — Patient portal interface.
+- **`provider.html`** — Provider portal interface.
+- **`test_concurrency_1.py`** — Concurrent appointment creation test.
+- **`test_concurrency_2.py`** — Concurrent appointment creation vs. rescheduling test.
+- **`requirements.txt`** — Python dependencies required to run the project.
 
 ## Features
 
