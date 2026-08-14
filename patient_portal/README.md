@@ -35,8 +35,6 @@ The outputs of these concurrency tests are included as comments at the end of **
 
 ## Project Structure
 
-## Project Structure
-
 ```text
 patient_portal/
 │
