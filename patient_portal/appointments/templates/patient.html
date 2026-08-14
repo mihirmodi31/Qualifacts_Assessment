@@ -60,6 +60,10 @@
 
     <h1>Patient Portal</h1>
 
+    {% if error %}
+        <p>{{ error }}</p>
+    {% endif %}
+
     <label>
         Role:
         <select onchange="changeRole(this.value)">
